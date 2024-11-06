@@ -1,8 +1,8 @@
-package com.pathplanner.lib.events;
+package frc.robot.events;
 
 import static edu.wpi.first.units.Units.Seconds;
 
-import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.*;
 
 /** Event for setting the value of an event trigger */
 public class TriggerEvent extends Event {

@@ -1,5 +1,5 @@
 //package com.pathplanner.lib.events;
-package com.pathplanner.lib.event;
+package frc.robot.events;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.units.*;
