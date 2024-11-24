@@ -99,11 +99,11 @@ public class LimelightSubsystem extends SubsystemBase {
     x = limelightTable.getEntry("tx").getDouble(0);
     y = limelightTable.getEntry("ty").getDouble(0);
     NetworkTableEntry tv = limelightTable.getEntry("tv");
-    if( tv != null){
-      SmartDashboard.putNumber("Detected?:",0);
-    }
     detectTag = tv.getDouble(0.0) == 1.0;
     if( detectTag){
+      SmartDashboard.putNumber("Detected?:", 1);
+    }
+    else{
       SmartDashboard.putNumber("Detected?:", 1);
     }
 
