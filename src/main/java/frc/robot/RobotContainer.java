@@ -8,6 +8,8 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.LimelightSubsystem;
 
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
@@ -27,6 +30,8 @@ public class RobotContainer {
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+  private final LimelightSubsystem limelight = new LimelightSubsystem();
+
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -60,6 +65,39 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureBindings();
+  }
+  public void LimelightMode(){
+      while(limelight.detectTag!=true){
+        drivetrain.applyRequest(() -> drive.withRotationalRate(HalfAngularRate));
+        limelight.update2DMeasurements();
+
+      }
+      if(limelight.detectTag==true && limelight.x>=0){
+        limelight.update2DMeasurements();
+        drivetrain.applyRequest(() ->drive.withRotationalRate(-HalfAngularRate));
+        if(limelight.x<=0){
+          limelight.update2DMeasurements();
+          drivetrain.applyRequest(() ->drive.withRotationalRate(0));
+          SmartDashboard.putNumber("Target Locked",1);
+        }
+      }
+      if(limelight.detectTag==true && limelight.x<=(0)){
+        limelight.update2DMeasurements();
+        drivetrain.applyRequest(() ->drive.withRotationalRate(HalfAngularRate));
+        if(limelight.x>=0){
+          limelight.update2DMeasurements();
+          drivetrain.applyRequest(() ->drive.withRotationalRate(0));
+          SmartDashboard.putNumber("Target Locked:", 1);
+        }
+      }
+      if(limelight.detectTag==true && limelight.x<=(3) && limelight.x>=(-3)){
+        limelight.update2DMeasurements();
+        drivetrain.applyRequest(() ->drive.withVelocityX(HalfSpeed));
+        if(limelight.distance<=50){
+          limelight.update2DMeasurements();
+          drivetrain.applyRequest(() ->drive.withVelocityX(0));
+        }
+      }
   }
 
   public Command getAutonomousCommand() {
