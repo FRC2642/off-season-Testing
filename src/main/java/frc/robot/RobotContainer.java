@@ -57,6 +57,7 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
     joystick.rightTrigger().onTrue(drivetrain.runOnce(() -> LimelightMode()));
+    joystick.leftTrigger().onTrue(drivetrain.runOnce(()-> DiagnosticMode()));
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
@@ -100,7 +101,15 @@ public class RobotContainer {
       }
             return null;
   }
+  public Command DiagnosticMode(){
+    limelight.limelightDiagnostic();
+    String limelightError = limelight.detectionError.name(); 
+    SmartDashboard.putNumber(limelightError,1);
 
+
+
+    return(null);
+  }
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
