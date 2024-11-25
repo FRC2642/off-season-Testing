@@ -67,61 +67,88 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
   }
-  public Command LimelightMode(){
-      while(limelight.detectTag!=true){
-        drivetrain.applyRequest(() -> drive.withRotationalRate(HalfAngularRate));
-        limelight.update2DMeasurements();
-
-      }
-      if(limelight.detectTag==true && limelight.x>=0){
-        limelight.update2DMeasurements();
-        drivetrain.applyRequest(() ->drive.withRotationalRate(-HalfAngularRate));
-        if(limelight.x<=0){
-          limelight.update2DMeasurements();
-          drivetrain.applyRequest(()->brake);
-          SmartDashboard.putNumber("Target Locked",1);
-        }
-      }
-      if(limelight.detectTag==true && limelight.x<=(0)){
-        limelight.update2DMeasurements();
-        drivetrain.applyRequest(() ->drive.withRotationalRate(HalfAngularRate));
-        if(limelight.x>=0){
-          limelight.update2DMeasurements();
-          drivetrain.applyRequest(()->brake);
-          SmartDashboard.putNumber("Target Locked:", 1);
-        }
-      }
-      if(limelight.detectTag==true && limelight.x<=(3) && limelight.x>=(-3)){
-        limelight.update2DMeasurements();
-        drivetrain.applyRequest(() ->drive.withVelocityX(HalfSpeed));
-        if(limelight.distance<=50){
-          limelight.update2DMeasurements();
-          drivetrain.applyRequest(()->brake);
-        }
-      }
-            return null;
+/**
+ * Executes the Limelight Mode command.
+ * This mode uses the Limelight subsystem to align the robot with a detected tag.
+ * The robot rotates and moves forward based on the tag's position to achieve alignment.
+ *
+ * @return null (as the function executes actions directly on the drivetrain)
+ */
+public Command LimelightMode() {
+  // Rotate until a tag is detected
+  while (!limelight.detectTag) {
+      drivetrain.applyRequest(() -> drive.withRotationalRate(HalfAngularRate));
+      limelight.update2DMeasurements();
   }
-  public Command DiagnosticMode(){
-    limelight.limelightDiagnostic();
-    limelight.update2DMeasurements();
-    String limelightError = limelight.detectionError.name(); 
-    SmartDashboard.putNumber(limelightError,1);
-    for( int i=0; i<4; i++){
-    drivetrain.applyRequest(()->point.withModuleDirection(new Rotation2d(1.57)));
-    limelight.limelightDiagnostic();
-    limelight.update2DMeasurements();
-    }
-    drivetrain.applyRequest(()-> drive.withRotationalRate(HalfAngularRate/1.5));
-    for( int i=0; i<8; i++){
+
+  // Adjust robot orientation based on tag position
+  if (limelight.detectTag && limelight.x >= 0) {
+      limelight.update2DMeasurements();
+      drivetrain.applyRequest(() -> drive.withRotationalRate(-HalfAngularRate));
+      if (limelight.x <= 0) {
+          limelight.update2DMeasurements();
+          drivetrain.applyRequest(() -> brake);
+          SmartDashboard.putNumber("Target Locked", 1);
+      }
+  }
+
+  if (limelight.detectTag && limelight.x <= 0) {
+      limelight.update2DMeasurements();
+      drivetrain.applyRequest(() -> drive.withRotationalRate(HalfAngularRate));
+      if (limelight.x >= 0) {
+          limelight.update2DMeasurements();
+          drivetrain.applyRequest(() -> brake);
+          SmartDashboard.putNumber("Target Locked:", 1);
+      }
+  }
+
+  // Move forward if tag is aligned within a threshold range
+  if (limelight.detectTag && limelight.x <= 3 && limelight.x >= -3) {
+      limelight.update2DMeasurements();
+      drivetrain.applyRequest(() -> drive.withVelocityX(HalfSpeed));
+      if (limelight.distance <= 50) {
+          limelight.update2DMeasurements();
+          drivetrain.applyRequest(() -> brake);
+      }
+  }
+
+  return null; // Command is executed directly
+}
+
+/**
+* Executes the Diagnostic Mode command.
+* This mode runs diagnostics on the Limelight and the drivetrain modules,
+* logging relevant errors and checking drivetrain behavior.
+*
+* @return null (as the function executes actions directly on the drivetrain)
+*/
+public Command DiagnosticMode() {
+  // Run initial diagnostics on the Limelight subsystem
+  limelight.limelightDiagnostic();
+  limelight.update2DMeasurements();
+  String limelightError = limelight.detectionError.name();
+  SmartDashboard.putNumber(limelightError, 1);
+
+  // Point all drivetrain modules in a fixed direction and run diagnostics
+  for (int i = 0; i < 4; i++) {
+      drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(1.57))); // Point modules in one direction
       limelight.limelightDiagnostic();
       limelight.update2DMeasurements();
-    }
-    drivetrain.applyRequest(()->brake);
-
-
-
-    return(null);
   }
+
+  // Rotate the drivetrain and continue diagnostics
+  drivetrain.applyRequest(() -> drive.withRotationalRate(HalfAngularRate / 1.5));
+  for (int i = 0; i < 8; i++) {
+      limelight.limelightDiagnostic();
+      limelight.update2DMeasurements();
+  }
+
+  // Apply brakes to the drivetrain after diagnostics are complete
+  drivetrain.applyRequest(() -> brake);
+
+  return null; // Command is executed directly
+}
+
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
