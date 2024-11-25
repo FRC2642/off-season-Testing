@@ -116,6 +116,7 @@ public class RobotContainer {
       limelight.limelightDiagnostic();
       limelight.update2DMeasurements();
     }
+    drivetrain.applyRequest(()->brake);
 
 
 
