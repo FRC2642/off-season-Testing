@@ -138,9 +138,10 @@ public Command DiagnosticMode() {
 
   // Rotate the drivetrain and continue diagnostics
   drivetrain.applyRequest(() -> drive.withRotationalRate(HalfAngularRate / 1.5));
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 4; i++) {
       limelight.limelightDiagnostic();
       limelight.update2DMeasurements();
+      Thread.sleep(1000);
   }
 
   // Apply brakes to the drivetrain after diagnostics are complete
