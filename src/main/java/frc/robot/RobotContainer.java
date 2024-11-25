@@ -103,8 +103,19 @@ public class RobotContainer {
   }
   public Command DiagnosticMode(){
     limelight.limelightDiagnostic();
+    limelight.update2DMeasurements();
     String limelightError = limelight.detectionError.name(); 
     SmartDashboard.putNumber(limelightError,1);
+    for( int i=0; i<4; i++){
+    drivetrain.applyRequest(()->point.withModuleDirection(new Rotation2d(1.57)));
+    limelight.limelightDiagnostic();
+    limelight.update2DMeasurements();
+    }
+    drivetrain.applyRequest(()-> drive.withRotationalRate(HalfAngularRate/1.5));
+    for( int i=0; i<8; i++){
+      limelight.limelightDiagnostic();
+      limelight.update2DMeasurements();
+    }
 
 
 
