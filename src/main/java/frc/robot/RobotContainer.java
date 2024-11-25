@@ -78,7 +78,7 @@ public class RobotContainer {
         drivetrain.applyRequest(() ->drive.withRotationalRate(-HalfAngularRate));
         if(limelight.x<=0){
           limelight.update2DMeasurements();
-          drivetrain.applyRequest(() ->drive.withRotationalRate(0));
+          drivetrain.applyRequest(()->brake);
           SmartDashboard.putNumber("Target Locked",1);
         }
       }
@@ -87,7 +87,7 @@ public class RobotContainer {
         drivetrain.applyRequest(() ->drive.withRotationalRate(HalfAngularRate));
         if(limelight.x>=0){
           limelight.update2DMeasurements();
-          drivetrain.applyRequest(() ->drive.withRotationalRate(0));
+          drivetrain.applyRequest(()->brake);
           SmartDashboard.putNumber("Target Locked:", 1);
         }
       }
@@ -96,7 +96,7 @@ public class RobotContainer {
         drivetrain.applyRequest(() ->drive.withVelocityX(HalfSpeed));
         if(limelight.distance<=50){
           limelight.update2DMeasurements();
-          drivetrain.applyRequest(() ->drive.withVelocityX(0));
+          drivetrain.applyRequest(()->brake);
         }
       }
             return null;
