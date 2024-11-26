@@ -128,4 +128,6 @@ public Command DiagnosticMode() {
   limelight.update2DMeasurements();
   String limelightError = limelight.detectionError.name();
   SmartDashboard.putNumber(limelightError, 1);
+  return(null);
+}
 }
