@@ -128,28 +128,4 @@ public Command DiagnosticMode() {
   limelight.update2DMeasurements();
   String limelightError = limelight.detectionError.name();
   SmartDashboard.putNumber(limelightError, 1);
-
-  // Point all drivetrain modules in a fixed direction and run diagnostics
-  for (int i = 0; i < 4; i++) {
-      drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(1.57))); // Point modules in one direction
-      limelight.limelightDiagnostic();
-      limelight.update2DMeasurements();
-  }
-
-  // Rotate the drivetrain and continue diagnostics
-  drivetrain.applyRequest(() -> drive.withRotationalRate(HalfAngularRate / 1.5));
-  for (int i = 0; i < 4; i++) {
-      limelight.limelightDiagnostic();
-      limelight.update2DMeasurements();
-  }
-
-  // Apply brakes to the drivetrain after diagnostics are complete
-  drivetrain.applyRequest(() -> brake);
-
-  return null; // Command is executed directly
-}
-
-  public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
-  }
 }
