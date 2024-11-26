@@ -63,7 +63,7 @@ public class LimelightSubsystem extends SubsystemBase {
         TV_NULL, // Limelight "tv" entry is null
         NO_PIPELINES, // No pipelines available
         UNDETERMINED, // Unable to determine state
-        NO_BOTPOSE, // No bot pose data
+        NO_BOTPOSE, // No bot pose data. 
         SUCCESS, // Detection successful
         UNKNOWN // Unknown error
     }
