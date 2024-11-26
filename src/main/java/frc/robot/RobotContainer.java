@@ -141,7 +141,6 @@ public Command DiagnosticMode() {
   for (int i = 0; i < 4; i++) {
       limelight.limelightDiagnostic();
       limelight.update2DMeasurements();
-      Thread.sleep(1000);
   }
 
   // Apply brakes to the drivetrain after diagnostics are complete
