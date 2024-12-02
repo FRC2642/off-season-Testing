@@ -8,13 +8,12 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -43,6 +42,7 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(HalfSpeed);
 
   private void configureBindings() {
+    DiagnosticMode();
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * HalfSpeed) // Drive forward with
                                                                                            // negative Y (forward)
@@ -56,7 +56,6 @@ public class RobotContainer {
 
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
-    joystick.rightTrigger().onTrue(drivetrain.runOnce(() -> LimelightMode()));
     joystick.leftTrigger().onTrue(drivetrain.runOnce(()-> DiagnosticMode()));
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
@@ -65,6 +64,7 @@ public class RobotContainer {
   }
 
   public RobotContainer() {
+    DiagnosticMode();
     configureBindings();
   }
 /**
@@ -74,60 +74,13 @@ public class RobotContainer {
  *
  * @return null (as the function executes actions directly on the drivetrain)
  */
-public Command LimelightMode() {
-  // Rotate until a tag is detected
-  while (!limelight.detectTag) {
-      drivetrain.applyRequest(() -> drive.withRotationalRate(HalfAngularRate));
-      limelight.update2DMeasurements();
-  }
 
-  // Adjust robot orientation based on tag position
-  if (limelight.detectTag && limelight.x >= 0) {
-      limelight.update2DMeasurements();
-      drivetrain.applyRequest(() -> drive.withRotationalRate(-HalfAngularRate));
-      if (limelight.x <= 0) {
-          limelight.update2DMeasurements();
-          drivetrain.applyRequest(() -> brake);
-          SmartDashboard.putNumber("Target Locked", 1);
-      }
-  }
-
-  if (limelight.detectTag && limelight.x <= 0) {
-      limelight.update2DMeasurements();
-      drivetrain.applyRequest(() -> drive.withRotationalRate(HalfAngularRate));
-      if (limelight.x >= 0) {
-          limelight.update2DMeasurements();
-          drivetrain.applyRequest(() -> brake);
-          SmartDashboard.putNumber("Target Locked:", 1);
-      }
-  }
-
-  // Move forward if tag is aligned within a threshold range
-  if (limelight.detectTag && limelight.x <= 3 && limelight.x >= -3) {
-      limelight.update2DMeasurements();
-      drivetrain.applyRequest(() -> drive.withVelocityX(HalfSpeed));
-      if (limelight.distance <= 50) {
-          limelight.update2DMeasurements();
-          drivetrain.applyRequest(() -> brake);
-      }
-  }
-
-  return null; // Command is executed directly
-}
-
-/**
-* Executes the Diagnostic Mode command.
-* This mode runs diagnostics on the Limelight and the drivetrain modules,
-* logging relevant errors and checking drivetrain behavior.
-*
-* @return null (as the function executes actions directly on the drivetrain)
-*/
 public Command DiagnosticMode() {
   // Run initial diagnostics on the Limelight subsystem
   limelight.limelightDiagnostic();
   limelight.update2DMeasurements();
   String limelightError = limelight.detectionError.name();
-  SmartDashboard.putNumber(limelightError, 1);
+  System.out.println(limelightError);
   return(null);
 }
 }

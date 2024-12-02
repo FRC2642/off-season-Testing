@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -18,7 +17,10 @@ public class LimelightSubsystem extends SubsystemBase {
 
     // Name of the NetworkTable used by the Limelight
     private String NetworkTableName;
+    public LimelightSubsystem(){
 
+        initialize();
+    }
     // Detection type enum, used to set Limelight pipelines
     public enum DetectionType {
         NOTE(1), 
@@ -65,6 +67,7 @@ public class LimelightSubsystem extends SubsystemBase {
         UNDETERMINED, // Unable to determine state
         NO_BOTPOSE, // No bot pose data
         SUCCESS, // Detection successful
+        INCORRECT_PIPELINE,
         UNKNOWN // Unknown error
     }
 
@@ -75,7 +78,7 @@ public class LimelightSubsystem extends SubsystemBase {
     public double x; // Horizontal offset
     public double y; // Vertical offset
     public double a; // Area of detected target
-    public boolean detectTag; // Whether a tag is detected
+    public double detectTag; // Whether a tag is detected
     public double distance; // Distance to the target
 
     // Camera and target parameters
@@ -100,7 +103,6 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return True if initialized, false otherwise
      */
     public boolean isInitialized() {
-        initialize();
         return limelightTable != null;
     }
 
@@ -136,7 +138,7 @@ public class LimelightSubsystem extends SubsystemBase {
             return DetectionError.TV_NULL;
         }
 
-        if (!detectTag) {
+        if (detectTag==0.0) {
             return DetectionError.NO_DETECTIONS;
         }
 
@@ -145,8 +147,8 @@ public class LimelightSubsystem extends SubsystemBase {
             return updatedError;
         }
 
-        if (detectionType == DetectionType.FIDUCIAL) {
-            // Add any specific logic for FIDUCIAL if necessary
+        if (detectionType != DetectionType.FIDUCIAL) {
+            return DetectionError.INCORRECT_PIPELINE;
         }
 
         return DetectionError.SUCCESS; // Default return for successful execution
@@ -172,19 +174,19 @@ public class LimelightSubsystem extends SubsystemBase {
         y = limelightTable.getEntry("ty").getDouble(0); // Vertical offset
 
         NetworkTableEntry tv = limelightTable.getEntry("tv");
-        detectTag = tv.getDouble(0.0) == 1.0; // Target detection status
+        detectTag = tv.getDouble(0.0); // Target detection status
 
         // Publish detection status to SmartDashboard
-        SmartDashboard.putNumber("Detected?:", detectTag ? 1 : 0);
+        System.out.println("Detected?:"+ detectTag);
 
         // Calculate distance using geometry
-        distance = (targetHeight - cameraHeight) / Math.tan(y + (cameraAngle * DegreesToRadians));
+        distance = (targetHeight - cameraHeight) / Math.tan(y + cameraAngle * 3.141592 / 180);
 
         // Publish measurements to SmartDashboard
-        SmartDashboard.putNumber("Area:", a);
-        SmartDashboard.putNumber("X:", x);
-        SmartDashboard.putNumber("Y:", y);
-        SmartDashboard.putNumber("Distance:", distance);
+        System.out.println("Area:"+ a);
+        System.out.println("X:"+ x);
+        System.out.println("Y:"+ y);
+        System.out.println("Distance:"+ distance);
 
         return DetectionError.SUCCESS;
     }
