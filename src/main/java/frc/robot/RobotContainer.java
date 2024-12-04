@@ -5,6 +5,9 @@
 package frc.robot;
 import frc.robot.subsystems.LimelightSubsystem;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+
 public class RobotContainer {
   private final LimelightSubsystem limelight = new LimelightSubsystem();
 
@@ -13,5 +16,13 @@ public class RobotContainer {
     limelight.update2DMeasurements();
     String limelightError=limelight.detectionError.name();
     System.out.println(limelightError);
+
+    configureBindings();
+  }
+
+  private void configureBindings() {}
+
+  public Command getAutonomousCommand() {
+    return Commands.print("No autonomous command configured");
   }
 }
