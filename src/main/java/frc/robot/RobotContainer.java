@@ -83,9 +83,11 @@ public class RobotContainer {
     // Constructor
     public RobotContainer() {
         configureBindings();
+        while(true){
         limelight.limelightDiagnostic();//Checks for error and prints to console
         limelight.update2DMeasurements();//Gives a ton of info about april tags
     }
+  }
 
     // Default autonomous command
     public Command getAutonomousCommand() {
