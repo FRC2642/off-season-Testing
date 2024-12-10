@@ -66,7 +66,7 @@ public class LimelightSubsystem extends SubsystemBase {
         UNDETERMINED, // Unable to determine state
         NO_BOTPOSE, // No bot pose data
         SUCCESS, // Detection successful
-        INCORRECT_PIPELINE,
+        INCORRECT_PIPELINE, // Searching for wrong target
         UNKNOWN // Unknown error
     }
 
@@ -83,7 +83,7 @@ public class LimelightSubsystem extends SubsystemBase {
     // Camera and target parameters
     public final double targetHeight = 95;
     public final double cameraHeight = 70;
-    public final double cameraAngle = 25;
+    public final double cameraAngle = 90;
     public final double DegreesToRadians = (180 / Math.PI);
 
     // Current detection error state
