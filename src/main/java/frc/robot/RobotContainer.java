@@ -38,46 +38,12 @@ public class RobotContainer {
         .withRotationalDeadband(MaxAngularRate * 0.1) // 10% deadband for rotation
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Field-centric driving (open loop)
 
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     // Telemetry logger
     private final Telemetry logger = new Telemetry(HalfSpeed);
 
     // Configure control bindings
     private void configureBindings() {
-        // Default command for drivetrain
-        drivetrain.setDefaultCommand(
-            drivetrain.applyRequest(() -> 
-                drive
-                    .withVelocityX(-joystick.getLeftY() * HalfSpeed) // Forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * HalfSpeed) // Left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * HalfAngularRate) // Counterclockwise with negative X (left)
-            )
-        );
-
-        // Brake mode while holding "A" button
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-
-        // Point wheels at a direction based on joystick while holding "B" button
-        joystick.b().whileTrue(
-            drivetrain.applyRequest(() -> 
-                point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
-            )
-        );
-
-        // Reset field-centric heading on left bumper press
-        joystick.leftBumper().onTrue(
-            drivetrain.runOnce(() -> drivetrain.seedFieldRelative())
-        );
-
-        // Simulation-specific configuration
-        if (Utils.isSimulation()) {
-            drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
-        }
-
-        // Register telemetry logger
-        drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     // Constructor
