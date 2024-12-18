@@ -4,11 +4,66 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Telemetry;
+import frc.robot.generated.CommandSwerveDrivetrain;
+import frc.robot.generated.TunerConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
-  /** Creates a new SwerveSubsystem. */
-  public SwerveSubsystem() {}
+
+  //DriveTrain
+    private CommandSwerveDrivetrain drivetrain;
+  //Constants
+    final double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps;
+    final double MaxAngularRate = 1.5 * Math.PI;
+    final double HalfSpeed = MaxSpeed / 2;
+    final double HalfAngularRate = MaxAngularRate / 2;
+  //SwerveRequests
+    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+        .withDeadband(MaxSpeed * 0.1)
+        .withRotationalDeadband(MaxAngularRate * 0.1)
+        .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    private final SwerveRequest.SwerveDriveBrake stop = new SwerveRequest.SwerveDriveBrake();
+    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+  //Telemetry (need to figure out)
+    private final Telemetry logger = new Telemetry(HalfSpeed);
+
+  public SwerveSubsystem() {
+   drivetrain = TunerConstants.DriveTrain;
+  }
+
+  public void Drive(double xSpeed, double ySpeed, double rotation){
+    drivetrain.applyRequest(() -> drive.withVelocityX(xSpeed * HalfSpeed)
+              .withVelocityY(ySpeed * HalfSpeed)
+              .withRotationalRate(rotation * HalfAngularRate));
+
+  }
+  public void Stop(){
+    drivetrain.applyRequest(() -> stop);
+  }
+
+  public void Point(Rotation2d pointVector){
+    drivetrain.applyRequest(() -> point.withModuleDirection(pointVector));
+  }
+
+  public void SetFieldCentric(){
+    drivetrain.runOnce(() -> drivetrain.seedFieldRelative());
+  }
+
+  public void OtherUnknownUse(){
+    if (Utils.isSimulation()) {
+      drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
+    }
+    drivetrain.registerTelemetry(logger::telemeterize);
+  }
+
 
   @Override
   public void periodic() {
