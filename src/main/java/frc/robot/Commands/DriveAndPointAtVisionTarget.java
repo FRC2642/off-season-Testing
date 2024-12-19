@@ -7,17 +7,22 @@ package frc.robot.Commands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.PhotonVisionSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
-public class DriveCommand extends Command {
+public class DriveAndPointAtVisionTarget extends Command {
   
+  private final PhotonVisionSubsystem vision;
   private final SwerveSubsystem swerve;
   private final XboxController control;
+  private int AprilTagID;
   
-  public DriveCommand(SwerveSubsystem swerve, XboxController control) {
+public DriveAndPointAtVisionTarget(SwerveSubsystem swerve, PhotonVisionSubsystem vision, int AprilTagID, XboxController control) {
+    this.vision = vision;
     this.swerve = swerve;
     this.control = control;
-    addRequirements(swerve);
+    this.AprilTagID = AprilTagID;
+    addRequirements(swerve, vision);
   }
 
   @Override
@@ -25,29 +30,11 @@ public class DriveCommand extends Command {
 
   @Override
   public void execute() {
-  //Get controller values
+    Rotation2d targetVector = vision.getAprilTagYaw(AprilTagID);
     double xSpeed = -control.getLeftY();
     double ySpeed = -control.getLeftX();
-    double rotation = -control.getRightX();
-    Rotation2d pointVector = new Rotation2d(-control.getLeftY(), -control.getLeftX());
 
-  //Decide Movement
-    if(control.getBButton()) {
-      swerve.Point(pointVector);
-    }
-    else{
-    if(Math.abs(xSpeed) <= 0.1f && Math.abs(ySpeed) <= 0.1f && Math.abs(rotation) <= 0.1f){
-      swerve.Stop();
-    }
-    else{
-      swerve.Drive(xSpeed, ySpeed, rotation);
-    }}
-
-  //Other settings
-    if(control.getLeftBumper()){
-      swerve.SetFieldCentric();
-    }
-    swerve.OtherUnknownUse();
+    swerve.driveFacingAngle(targetVector, xSpeed, ySpeed);
   }
 
   // Called once the command ends or is interrupted.
@@ -57,6 +44,6 @@ public class DriveCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return !control.getAButton();
   }
 }

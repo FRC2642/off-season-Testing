@@ -20,7 +20,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   //DriveTrain
     private CommandSwerveDrivetrain drivetrain;
-  //Constants
+  //Constants (currently using half speed)
     final double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps;
     final double MaxAngularRate = 1.5 * Math.PI;
     final double HalfSpeed = MaxSpeed / 2;
@@ -32,17 +32,21 @@ public class SwerveSubsystem extends SubsystemBase {
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.SwerveDriveBrake stop = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+    private final SwerveRequest.FieldCentricFacingAngle driveFacingAngle = new SwerveRequest.FieldCentricFacingAngle()
+        .withDeadband(MaxSpeed * 0.1)
+        .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   //Telemetry (need to figure out)
-    private final Telemetry logger = new Telemetry(HalfSpeed);
+    private final Telemetry logger = new Telemetry(HalfSpeed);                //Speed
 
   public SwerveSubsystem() {
    drivetrain = TunerConstants.DriveTrain;
   }
 
   public void Drive(double xSpeed, double ySpeed, double rotation){
-    drivetrain.applyRequest(() -> drive.withVelocityX(xSpeed * HalfSpeed)
-              .withVelocityY(ySpeed * HalfSpeed)
-              .withRotationalRate(rotation * HalfAngularRate));
+    drivetrain.applyRequest(() -> drive
+              .withVelocityX(xSpeed * HalfSpeed)                              //Speed
+              .withVelocityY(ySpeed * HalfSpeed)                              //Speed
+              .withRotationalRate(rotation * HalfAngularRate));               //Angular Rate
 
   }
   public void Stop(){
@@ -51,6 +55,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void Point(Rotation2d pointVector){
     drivetrain.applyRequest(() -> point.withModuleDirection(pointVector));
+  }
+
+  public void driveFacingAngle(Rotation2d pointVector, double xSpeed, double ySpeed){
+    drivetrain.applyRequest(()-> driveFacingAngle
+              .withVelocityX(xSpeed * HalfSpeed)                              //Speed
+              .withVelocityY(ySpeed * HalfSpeed)                              //Speed
+              .withTargetDirection(pointVector));
   }
 
   public void SetFieldCentric(){
