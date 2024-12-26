@@ -13,11 +13,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * Subsystem to manage the Limelight vision system.
  * Handles detection types, measurements, and diagnostics.
  */
-public class LimelightSubsystem extends SubsystemBase {
+public class Limelight extends SubsystemBase {
 
     // Name of the NetworkTable used by the Limelight
     private String NetworkTableName;
-    public LimelightSubsystem(){
+    public Limelight(){
         initialize();
     }
     // Detection type enum, used to set Limelight pipelines

@@ -7,7 +7,7 @@ package frc.robot;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.Limelight;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -33,7 +33,7 @@ public class RobotContainer {
                                                                // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-  private final LimelightSubsystem limelight = new LimelightSubsystem();
+  private final Limelight limelight = new Limelight();
   private final Telemetry logger = new Telemetry(HalfSpeed);
 
   private void configureBindings() {
