@@ -30,13 +30,13 @@ public class DriveCommand extends Command {
     double ySpeed = -control.getLeftX();
     double rotation = -control.getRightX();
     Rotation2d pointVector = new Rotation2d(-control.getLeftY(), -control.getLeftX());
-
   //Decide Movement
     if(control.getBButton()) {
       swerve.Point(pointVector);
     }
     else{
-    if(Math.abs(xSpeed) <= 0.1f && Math.abs(ySpeed) <= 0.1f && Math.abs(rotation) <= 0.1f){
+    if(control.getAButton()){
+      //Math.abs(xSpeed) <= 0.1f && Math.abs(ySpeed) <= 0.1f && Math.abs(rotation) <= 0.1f
       swerve.Stop();
     }
     else{

@@ -47,7 +47,6 @@ public class SwerveSubsystem extends SubsystemBase {
               .withVelocityX(xSpeed * HalfSpeed)                              //Speed
               .withVelocityY(ySpeed * HalfSpeed)                              //Speed
               .withRotationalRate(rotation * HalfAngularRate));               //Angular Rate
-
   }
   public void Stop(){
     drivetrain.applyRequest(() -> stop);
