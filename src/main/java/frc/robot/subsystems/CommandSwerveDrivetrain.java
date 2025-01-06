@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.generated.TunerConstants;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -65,8 +66,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                         new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                        3.0, // Max module speed, in m/s
-                        0.4 // Drive base radius in meters. Distance from robot center to furthest module.
+                        TunerConstants.kSpeedAt12VoltsMps, // Max module speed, in m/s
+                        0.4 // Drive base radius in meters. Distance from robot center to furthest module.      !!!!!! CHANGE WHEN NEEDED !!!!!!
                 ),
                 config, // The robot configuration
                 () -> {

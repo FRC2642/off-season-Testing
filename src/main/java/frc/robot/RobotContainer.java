@@ -6,12 +6,16 @@ package frc.robot;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -59,14 +63,34 @@ public class RobotContainer {
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 
+  /* PathPlanner */
+  private final SendableChooser<Command> autoChooser;
+
   public RobotContainer() {
     configureBindings();
+
+    /* More PP */
+    // There was another option that could load all Paths but this will filter out those with "comp" appended to the front so we can test seperately.
+
+    // For convenience a programmer could change this when going to competition.
+    boolean isCompetition = true;
+
+    // Build an auto chooser. This will use Commands.none() as the default option.
+    // As an example, this will only show autos that start with "comp" while at
+    // competition as defined by the programmer
+    autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
+      (stream) -> isCompetition
+        ? stream.filter(auto -> auto.getName().startsWith("comp"))
+        : stream
+    );
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+  }
   }
 
   public Command getAutonomousCommand() {
-    // This method loads the auto when it is called, however, it is recommended
-    // to first load your paths/autos when code starts, then return the
-    // pre-loaded auto/path
-    return new PathPlannerAuto("Example Auto");
+    // Select auto with SendableChooser
+    return autoChooser.getSelected();
+    // We could also specify one path in the code with something like: new PathPlannerAuto("Example Auto")
   }
 }
