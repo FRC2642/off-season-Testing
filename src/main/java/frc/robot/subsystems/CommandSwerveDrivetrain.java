@@ -88,10 +88,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
     }
 
+    /* Alternate attempt at doing pathplanner */ /*
     private void configureAutoBuilder() {
         try {
             var config = RobotConfig.fromGUISettings();
-            AutoBuilder.configure(
+            AutoBuilder.configureHolonomic(
                 () -> getState().Pose,   // Supplier of current robot pose
                 this::resetPose,         // Consumer for seeding pose against auto
                 () -> getState().Speeds, // Supplier of current robot speeds
@@ -106,7 +107,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     new PIDConstants(10, 0, 0),
                     // PID constants for rotation
                     new PIDConstants(7, 0, 0),
+                    // Max Module Speed in m/s.
                     TunerConstants.kSpeedAt12VoltsMps,
+                    // Distance from Robot Center to furthest wheel.
                     0.4
                 ),
                 config,
@@ -118,6 +121,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
         }
     }
+        */
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
