@@ -7,7 +7,7 @@ package frc.robot;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-
+import frc.robot.subsystems.Limelight;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -27,16 +27,18 @@ public class RobotContainer {
     private double HalfSpeed = MaxSpeed / 2;
     private double HalfAngularRate = MaxAngularRate / 2;
 
-    // Controller and drivetrain initialization
-    private final CommandXboxController joystick = new CommandXboxController(0); // Joystick
-    private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // Drivetrain
-    private final Limelight limelight= new Limelight();
 
-    // Swerve requests
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-        .withDeadband(MaxSpeed * 0.1) // 10% deadband for speed
-        .withRotationalDeadband(MaxAngularRate * 0.1) // 10% deadband for rotation
-        .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Field-centric driving (open loop)
+  /* Setting up bindings for necessary control of the swerve drive platform */
+  private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
+  private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
+                                                               // driving in open loop
+  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+  private final Telemetry logger = new Telemetry(HalfSpeed);
+
 
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -75,12 +77,13 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
+
     // Constructor
     public RobotContainer() {
         configureBindings();
 //Gives a ton of info about april tags
     }
-  
+
 
     // Default autonomous command
     public Command getAutonomousCommand() {

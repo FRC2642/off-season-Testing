@@ -17,8 +17,6 @@ public class Limelight extends SubsystemBase {
 
   }
 
-    
-
     // Detection type enum, used to set Limelight pipelines
     public enum DetectionType {
         NOTE(1), 
