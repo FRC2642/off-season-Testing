@@ -8,7 +8,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.Limelight;
 
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
@@ -30,7 +30,7 @@ public class RobotContainer {
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
-  private final LimelightSubsystem limelight = new LimelightSubsystem();
+  private final Limelight limelight = new Limelight();
 
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -81,14 +81,14 @@ public Command LimelightMode() {
       limelight.update2DMeasurements();
   }
 
-  // Adjust robot orientation based on tag position
+ while(limelight.distance>50){ // Adjust robot orientation based on tag position
   if (limelight.detectTag && limelight.x >= 0) {
       limelight.update2DMeasurements();
       drivetrain.applyRequest(() -> drive.withRotationalRate(-HalfAngularRate));
       if (limelight.x <= 0) {
           limelight.update2DMeasurements();
           drivetrain.applyRequest(() -> brake);
-          SmartDashboard.putNumber("Target Locked", 1);
+          System.out.println("Target Locked");
       }
   }
 
@@ -98,7 +98,7 @@ public Command LimelightMode() {
       if (limelight.x >= 0) {
           limelight.update2DMeasurements();
           drivetrain.applyRequest(() -> brake);
-          SmartDashboard.putNumber("Target Locked:", 1);
+          System.out.println("Target Locked");
       }
   }
 
@@ -111,7 +111,7 @@ public Command LimelightMode() {
           drivetrain.applyRequest(() -> brake);
       }
   }
-
+ }
   return null; // Command is executed directly
 }
 
@@ -127,7 +127,7 @@ public Command DiagnosticMode() {
   limelight.limelightDiagnostic();
   limelight.update2DMeasurements();
   String limelightError = limelight.detectionError.name();
-  SmartDashboard.putNumber(limelightError, 1);
+  System.out.println("LimelightError="+limelightError);
 
   // Point all drivetrain modules in a fixed direction and run diagnostics
   for (int i = 0; i < 4; i++) {
@@ -141,6 +141,7 @@ public Command DiagnosticMode() {
   for (int i = 0; i < 4; i++) {
       limelight.limelightDiagnostic();
       limelight.update2DMeasurements();
+      System.out.println("LimelightError="+limelightError);
   }
 
   // Apply brakes to the drivetrain after diagnostics are complete

@@ -4,20 +4,20 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-/**
- * Subsystem to manage the Limelight vision system.
- * Handles detection types, measurements, and diagnostics.
- */
-public class LimelightSubsystem extends SubsystemBase {
 
-    // Name of the NetworkTable used by the Limelight
-    private String NetworkTableName;
+public class Limelight extends SubsystemBase {
+  /** Creates a new Limelight. */
+  public Limelight() {
+    initialize();
+
+  }
+
+    
 
     // Detection type enum, used to set Limelight pipelines
     public enum DetectionType {
@@ -63,8 +63,9 @@ public class LimelightSubsystem extends SubsystemBase {
         TV_NULL, // Limelight "tv" entry is null
         NO_PIPELINES, // No pipelines available
         UNDETERMINED, // Unable to determine state
-        NO_BOTPOSE, // No bot pose data. 
+        NO_BOTPOSE, // No bot pose data
         SUCCESS, // Detection successful
+        INCORRECT_PIPELINE, // Searching for wrong target
         UNKNOWN // Unknown error
     }
 
@@ -81,7 +82,7 @@ public class LimelightSubsystem extends SubsystemBase {
     // Camera and target parameters
     public final double targetHeight = 95;
     public final double cameraHeight = 70;
-    public final double cameraAngle = 25;
+    public final double cameraAngle = 90;
     public final double DegreesToRadians = (180 / Math.PI);
 
     // Current detection error state
@@ -91,6 +92,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * Initializes the Limelight NetworkTable.
      */
     private void initialize() {
+        final String NetworkTableName = "limelight";
         limelightTable = NetworkTableInstance.getDefault().getTable(NetworkTableName);
     }
 
@@ -100,7 +102,6 @@ public class LimelightSubsystem extends SubsystemBase {
      * @return True if initialized, false otherwise
      */
     public boolean isInitialized() {
-        initialize();
         return limelightTable != null;
     }
 
@@ -136,7 +137,7 @@ public class LimelightSubsystem extends SubsystemBase {
             return DetectionError.TV_NULL;
         }
 
-        if (!detectTag) {
+        if (detectTag==false) {
             return DetectionError.NO_DETECTIONS;
         }
 
@@ -145,8 +146,8 @@ public class LimelightSubsystem extends SubsystemBase {
             return updatedError;
         }
 
-        if (detectionType == DetectionType.FIDUCIAL) {
-            // Add any specific logic for FIDUCIAL if necessary
+        if (detectionType != DetectionType.FIDUCIAL) {
+            return DetectionError.INCORRECT_PIPELINE;
         }
 
         return DetectionError.SUCCESS; // Default return for successful execution
@@ -172,20 +173,30 @@ public class LimelightSubsystem extends SubsystemBase {
         y = limelightTable.getEntry("ty").getDouble(0); // Vertical offset
 
         NetworkTableEntry tv = limelightTable.getEntry("tv");
-        detectTag = tv.getDouble(0.0) == 1.0; // Target detection status
+        Double seeTag= tv.getDouble(0.0);
+        if(seeTag != (0)){
+          detectTag=true;
+        }
+// Target detection status
 
         // Publish detection status to SmartDashboard
-        SmartDashboard.putNumber("Detected?:", detectTag ? 1 : 0);
+        System.out.println("Detected?:"+ detectTag);
 
         // Calculate distance using geometry
-        distance = (targetHeight - cameraHeight) / Math.tan(y + (cameraAngle * DegreesToRadians));
+        distance = (targetHeight - cameraHeight) / Math.tan(y + cameraAngle * 3.141592 / 180);
 
         // Publish measurements to SmartDashboard
-        SmartDashboard.putNumber("Area:", a);
-        SmartDashboard.putNumber("X:", x);
-        SmartDashboard.putNumber("Y:", y);
-        SmartDashboard.putNumber("Distance:", distance);
+        System.out.println("Area:"+ a);
+        System.out.println("X:"+ x);
+        System.out.println("Y:"+ y);
+        System.out.println("Distance:"+ distance);
 
         return DetectionError.SUCCESS;
-    }
+    
+  
+  }
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
 }
