@@ -4,22 +4,21 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-/**
- * Subsystem to manage the Limelight vision system.
- * Handles detection types, measurements, and diagnostics.
- */
-public class LimelightSubsystem extends SubsystemBase {
 
-    // Name of the NetworkTable used by the Limelight
-    private String NetworkTableName;
-    public LimelightSubsystem(){
-        initialize();
-    }
+public class Limelight extends SubsystemBase {
+  /** Creates a new Limelight. */
+  public Limelight() {
+    initialize();
+
+  }
+
+    
+
     // Detection type enum, used to set Limelight pipelines
     public enum DetectionType {
         NOTE(1), 
@@ -77,7 +76,7 @@ public class LimelightSubsystem extends SubsystemBase {
     public double x; // Horizontal offset
     public double y; // Vertical offset
     public double a; // Area of detected target
-    public double detectTag; // Whether a tag is detected
+    public boolean detectTag; // Whether a tag is detected
     public double distance; // Distance to the target
 
     // Camera and target parameters
@@ -93,6 +92,7 @@ public class LimelightSubsystem extends SubsystemBase {
      * Initializes the Limelight NetworkTable.
      */
     private void initialize() {
+        final String NetworkTableName = "limelight";
         limelightTable = NetworkTableInstance.getDefault().getTable(NetworkTableName);
     }
 
@@ -137,7 +137,7 @@ public class LimelightSubsystem extends SubsystemBase {
             return DetectionError.TV_NULL;
         }
 
-        if (detectTag==0.0) {
+        if (detectTag==false) {
             return DetectionError.NO_DETECTIONS;
         }
 
@@ -173,7 +173,11 @@ public class LimelightSubsystem extends SubsystemBase {
         y = limelightTable.getEntry("ty").getDouble(0); // Vertical offset
 
         NetworkTableEntry tv = limelightTable.getEntry("tv");
-        detectTag = tv.getDouble(0.0); // Target detection status
+        Double seeTag= tv.getDouble(0.0);
+        if(seeTag != (0)){
+          detectTag=true;
+        }
+// Target detection status
 
         // Publish detection status to SmartDashboard
         System.out.println("Detected?:"+ detectTag);
@@ -188,5 +192,11 @@ public class LimelightSubsystem extends SubsystemBase {
         System.out.println("Distance:"+ distance);
 
         return DetectionError.SUCCESS;
-    }
+    
+  
+  }
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
 }
