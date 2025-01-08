@@ -40,11 +40,6 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(HalfSpeed);
 
 
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-
-    // Telemetry logger
-    private final Telemetry logger = new Telemetry(HalfSpeed);
 
     // Configure control bindings
     private void configureBindings() {

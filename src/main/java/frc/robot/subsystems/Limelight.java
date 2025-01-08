@@ -17,6 +17,8 @@ public class Limelight extends SubsystemBase {
 
   }
 
+    
+
     // Detection type enum, used to set Limelight pipelines
     public enum DetectionType {
         NOTE(1), 
@@ -195,6 +197,8 @@ public class Limelight extends SubsystemBase {
   }
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    limelightDiagnostic();
+    update2DMeasurements();
+    System.out.println("Periodic Working");
   }
 }
