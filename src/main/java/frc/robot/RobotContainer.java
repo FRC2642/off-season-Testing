@@ -80,38 +80,8 @@ public Command LimelightMode() {
       drivetrain.applyRequest(() -> drive.withRotationalRate(HalfAngularRate));
       limelight.update2DMeasurements();
   }
-
- while(limelight.distance>50){ // Adjust robot orientation based on tag position
-  if (limelight.detectTag && limelight.x >= 0) {
-      limelight.update2DMeasurements();
-      drivetrain.applyRequest(() -> drive.withRotationalRate(-HalfAngularRate));
-      if (limelight.x <= 0) {
-          limelight.update2DMeasurements();
-          drivetrain.applyRequest(() -> brake);
-          System.out.println("Target Locked");
-      }
-  }
-
-  if (limelight.detectTag && limelight.x <= 0) {
-      limelight.update2DMeasurements();
-      drivetrain.applyRequest(() -> drive.withRotationalRate(HalfAngularRate));
-      if (limelight.x >= 0) {
-          limelight.update2DMeasurements();
-          drivetrain.applyRequest(() -> brake);
-          System.out.println("Target Locked");
-      }
-  }
-
-  // Move forward if tag is aligned within a threshold range
-  if (limelight.detectTag && limelight.x <= 3 && limelight.x >= -3) {
-      limelight.update2DMeasurements();
-      drivetrain.applyRequest(() -> drive.withVelocityX(HalfSpeed));
-      if (limelight.distance <= 50) {
-          limelight.update2DMeasurements();
-          drivetrain.applyRequest(() -> brake);
-      }
-  }
- }
+  drivetrain.applyRequest(()->brake);
+ 
   return null; // Command is executed directly
 }
 
