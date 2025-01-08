@@ -8,6 +8,7 @@ import frc.robot.subsystems.Limelight;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+@SuppressWarnings("unused")
 public class AutoMeasure extends SubsystemBase {
   private final Limelight limelight = new Limelight();
   /** Creates a new AutoMeasure. */

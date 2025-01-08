@@ -6,6 +6,9 @@ package frc.robot;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
 
@@ -13,6 +16,8 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -20,6 +25,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Limelight;
 
+@SuppressWarnings("unused")
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
@@ -75,13 +81,21 @@ public class RobotContainer {
  * @return null (as the function executes actions directly on the drivetrain)
  */
 public Command LimelightMode() {
+  while(limelight.x>3 && limelight.x<-3){
   // Rotate until a tag is detected
   while (!limelight.detectTag) {
       drivetrain.applyRequest(() -> drive.withRotationalRate(HalfAngularRate));
       limelight.update2DMeasurements();
   }
+  double speed = Math.copySign(Math.min(Math.abs(limelight.x) / 10.0, MaxAngularRate), limelight.x); 
+  if(limelight.x>0){
+  drivetrain.applyRequest(() -> drive.withRotationalRate(-speed));
+  }
+  if(limelight.x<0){
+    drivetrain.applyRequest(() -> drive.withRotationalRate(speed));
+  }
   drivetrain.applyRequest(()->brake);
- 
+}
   return null; // Command is executed directly
 }
 
@@ -118,7 +132,7 @@ public Command DiagnosticMode() {
   drivetrain.applyRequest(() -> brake);
 
   return null; // Command is executed directly
-}
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");

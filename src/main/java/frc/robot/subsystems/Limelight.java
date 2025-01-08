@@ -93,6 +93,7 @@ public class Limelight extends SubsystemBase {
      */
     private void initialize() {
         final String NetworkTableName = "limelight";
+
         limelightTable = NetworkTableInstance.getDefault().getTable(NetworkTableName);
     }
 
@@ -171,7 +172,7 @@ public class Limelight extends SubsystemBase {
         a = limelightTable.getEntry("ta").getDouble(0); // Target area
         x = limelightTable.getEntry("tx").getDouble(0); // Horizontal offset
         y = limelightTable.getEntry("ty").getDouble(0); // Vertical offset
-
+        
         NetworkTableEntry tv = limelightTable.getEntry("tv");
         Double seeTag= tv.getDouble(0.0);
         if(seeTag != (0)){
