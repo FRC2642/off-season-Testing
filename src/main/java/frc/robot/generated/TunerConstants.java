@@ -1,3 +1,4 @@
+
 package frc.robot.generated;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
